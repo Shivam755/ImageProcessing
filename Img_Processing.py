@@ -66,7 +66,7 @@ def copypaste(p):
     p_cpy.save('img.jpg')
     p_cpy.show()
 def flipme(p):
-    flip = ["anti-clockwise flip","clockwise flip","horizontal flip","vertical flip"]
+    flip = ["Anti-Clockwise Flip","Clockwise Flip","Horizontal Flip","Vertical Flip"]
     for i in range(len(flip)):
         print(f"{i+1}.  {flip[i]}")
     opt=int(input(">>Enter flipping option : "))
@@ -81,7 +81,7 @@ def flipme(p):
     elif opt==3:
         new_img=ImageOps.mirror(p)
         # new_img=p.transpose(Image.FLIP_LEFT_RIGHT)
-        new_image.save('img.jpg')
+        new_img.save('img.jpg')
         new_img.show()
     elif opt==4:
         new_image=p.transpose(Image.FLIP_TOP_BOTTOM)
