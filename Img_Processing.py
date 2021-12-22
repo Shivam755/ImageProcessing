@@ -1,6 +1,6 @@
 from genericpath import isfile
 from PIL import Image,ImageEnhance
-from os import mkdir
+from os import mkdir, path,getcwd
 import os.path as op
 
 def printmenu():
@@ -21,7 +21,7 @@ img = Image.open('birdy.jpg')
 def WannaSave(p,path):
     print("Do you want to save this image??\nY / N")
     ask1 = input(">>>> ")
-    if ask1 == "Y":
+    if ask1 == "Y".casefold():
         string = input("Enter the name of the file: ")
         if op.isfile(string)==False:
             new = p.save(path+"\\"+string+'.jpg')
@@ -29,7 +29,7 @@ def WannaSave(p,path):
         else:
             print("Filename already exists. Please try a new filename.")
             WannaSave(p,path)
-    elif ask1 =="N":
+    elif ask1 =="N".casefold():
         pass
     else:
         print("Please enter a valid input!")
@@ -37,19 +37,20 @@ def WannaSave(p,path):
 
 def resizeme(p):
     try:
-        path = ""
         d = "Resized Images"
-        if op.isdir(path+d)==False:
+        path = getcwd()
+        if op.isdir(path+"\\"+d)==False:
             mkdir(path,d)
         width=int(input(">>Enter width : "))
         height=int(input(">>Enter height : "))
         new_image = p.resize((width, height))
         new_image.show()
-        path+=d
-    except:
+    except Exception as e:
         print("Enter valid input !! ")
-        resizeme(p)
+        print(e)
+        # resizeme(p)
     finally:
+        path+=d
         WannaSave(new_image,path)
 
 def rotateme(p):
