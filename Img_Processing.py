@@ -1,4 +1,4 @@
-from genericpath import isfile
+# from genericpath import isfile
 from PIL import Image, ImageEnhance
 from os import mkdir, getcwd
 import os.path as op
@@ -18,31 +18,31 @@ that help us apply filters to images, and use PIL to adjust image
 brightness, contrast, and color tone. We also performed basic
 functionalities along with this.""")
 
-global img, ask
+global img, ask, path
 img = Image.open('birdy.jpg')
+path = getcwd()
 
 
-def WannaSave(p, path):
+def WannaSave(p, path1):
     print("Do you want to save this image??\nY / N")
     ask1 = input(">>>> ")
     if ask1.casefold() == "Y".casefold():
         string = input("Enter the name of the file: ")
         if op.isfile(string) == False:
-            new = p.save(path+"\\"+string+'.jpg')
+            new = p.save(path1+"\\"+string+'.jpg')
             print("File Saved!")
         else:
             print("Filename already exists. Please try a new filename.")
-            WannaSave(p, path)
+            WannaSave(p, path1)
     elif ask1.casefold() == "N".casefold():
         pass
     else:
         print("Please enter a valid input!")
-        WannaSave(p, path)
+        WannaSave(p, path1)
 
 
 def resizeme(p):
     try:
-        path = getcwd()
         d = "Resized Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
@@ -60,7 +60,6 @@ def resizeme(p):
 
 def rotateme(p):
     try:
-        path = getcwd()
         d = "Rotated Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
@@ -80,7 +79,6 @@ def filters(p):
     for i in range(len(fil)):
         print(f"{i+1}.  {fil[i]}")
     try:
-        path = getcwd()
         d = "Filtered Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
@@ -96,18 +94,21 @@ def filters(p):
         elif filter == 2:
             fact = float(input(">>Enter contrast factor : "))
             contrast = ImageEnhance.Contrast(p)
-            contrast.enhance(fact).show()
-            WannaSave(contrast, f"{path}\\{d}\\{fil[1]}")
+            c = contrast.enhance(fact)
+            c.show()
+            WannaSave(c, f"{path}\\{d}\\{fil[1]}")
         elif filter == 3:
             fact = float(input(">>Enter brightness factor : "))
             brightness = ImageEnhance.Brightness(p)
-            brightness.enhance(fact).show()
-            WannaSave(brightness, f"{path}\\{d}\\{fil[2]}")
+            b = brightness.enhance(fact)
+            b.show()
+            WannaSave(b, f"{path}\\{d}\\{fil[2]}")
         elif filter == 4:
             fact = float(input(">>Enter sharpness factor : "))
             sharpness = ImageEnhance.Sharpness(p)
-            sharpness.enhance(fact).show()
-            WannaSave(sharpness, f"{path}\\{d}\\{fil[3]}")
+            s = sharpness.enhance(fact)
+            s.show()
+            WannaSave(s, f"{path}\\{d}\\{fil[3]}")
     except Exception as e:
         print(e)
         print("Enter valid input !! ")
@@ -117,24 +118,21 @@ def filters(p):
 def changemytype(p):
     print("It will save image automatically, are you sure about that?")
     ask2 = input("Y / N\n>> ")
-    if ask2=="y".casefold():
-        path = getcwd()
+    if ask2.casefold() == "Y".casefold():
         d = "Type Changed Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
         img_name = input(">>Enter new name of image : ")
         img_type = input(">>Enter extention of image : ")
         p.save(f"{path}\\{d}\\{img_name}.{img_type}")
-    elif ask2=="N".casefold():
+    elif ask2.casefold() == "N".casefold():
         print("Okay!")
-        pass
     else:
         print("Enter valid input!!")
 
 
 def copypaste(p):
     try:
-        path = getcwd()
         d = "Altered Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
@@ -155,12 +153,14 @@ def copypaste(p):
 
 def flipme(p):
     try:
-        path = getcwd()
         d = "Flipped Images"
-        if op.isdir(path+"\\"+d) == False:
-            mkdir(f"{path}\\{d}")
         flip = ["Anti-Clockwise Flip", "Clockwise Flip",
                 "Horizontal Flip", "Vertical Flip"]
+        if op.isdir(path+"\\"+d) == False:
+            mkdir(f"{path}\\{d}")
+            for i in range(len(flip)):
+                if op.isdir(path+"\\"+d+"\\"+flip[i]) == False:
+                    mkdir(f"{path}\\{d}\\{flip[i]}")
         for i in range(len(flip)):
             print(f"{i+1}.  {flip[i]}")
         opt = int(input(">>Enter flipping option : "))
@@ -186,7 +186,6 @@ def flipme(p):
 
 def cropme(p):
     try:
-        path = getcwd()
         d = "Cropped Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
@@ -234,6 +233,8 @@ while True:
         elif ask == 8:
             print("Thank You !!")
             break
+        else:
+            print("Please enter a number given in the menu!!")
     except Exception as e:
         print(e)
         print("Please enter an integer!")
