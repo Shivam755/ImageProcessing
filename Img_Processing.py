@@ -51,9 +51,9 @@ def resizeme(p):
         new_image = p.resize((width, height))
         new_image.show()
     except Exception as e:
-        print("Enter valid input !! ")
         print(e)
-        # resizeme(p)
+        print("Enter valid input !! ")
+        resizeme(p)
     finally:
         WannaSave(new_image, f"{path}\\{d}")
 
@@ -67,7 +67,8 @@ def rotateme(p):
         deg = int(input(">>Enter degree to rotate : "))
         new_image = p.rotate(deg)
         new_image.show()
-    except:
+    except Exception as e:
+        print(e)
         print("Enter valid input !! ")
         rotateme(p)
     finally:
@@ -83,37 +84,52 @@ def filters(p):
         d = "Filtered Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
+            for i in range(len(fil)):
+                if op.isdir(path+"\\"+d+"\\"+fil[i]) == False:
+                    mkdir(f"{path}\\{d}\\{fil[i]}")
         filter = int(input(">>Enter filter : "))
         if filter == 1:
             mode = input(">>Enter mode for transormation (RGB/L/CMYK): ")
             new_image = p.convert(mode)
-            new_image.save('img.jpg')
             new_image.show()
-            WannaSave(new_image, f"{path}\\{d}")
+            WannaSave(new_image, f"{path}\\{d}\\{fil[0]}")
         elif filter == 2:
             fact = float(input(">>Enter contrast factor : "))
             contrast = ImageEnhance.Contrast(p)
             contrast.enhance(fact).show()
-            WannaSave(contrast, path)
+            WannaSave(contrast, f"{path}\\{d}\\{fil[1]}")
         elif filter == 3:
             fact = float(input(">>Enter brightness factor : "))
             brightness = ImageEnhance.Brightness(p)
             brightness.enhance(fact).show()
-            WannaSave(brightness, path)
+            WannaSave(brightness, f"{path}\\{d}\\{fil[2]}")
         elif filter == 4:
             fact = float(input(">>Enter sharpness factor : "))
             sharpness = ImageEnhance.Sharpness(p)
             sharpness.enhance(fact).show()
-            WannaSave(sharpness, path)
-    except:
+            WannaSave(sharpness, f"{path}\\{d}\\{fil[3]}")
+    except Exception as e:
+        print(e)
         print("Enter valid input !! ")
         filters(p)
 
 
 def changemytype(p):
-    img_name = input(">>Enter new name of image : ")
-    img_type = input(">>Enter extention of image : ")
-    p.save(img_name+"."+img_type)
+    print("It will save image automatically, are you sure about that?")
+    ask2 = input("Y / N\n>> ")
+    if ask2=="y".casefold():
+        path = getcwd()
+        d = "Type Changed Images"
+        if op.isdir(path+"\\"+d) == False:
+            mkdir(f"{path}\\{d}")
+        img_name = input(">>Enter new name of image : ")
+        img_type = input(">>Enter extention of image : ")
+        p.save(f"{path}\\{d}\\{img_name}.{img_type}")
+    elif ask2=="N".casefold():
+        print("Okay!")
+        pass
+    else:
+        print("Enter valid input!!")
 
 
 def copypaste(p):
@@ -129,11 +145,12 @@ def copypaste(p):
         dist_up = int(input(">>Enter distance from upside : "))
         p_cpy.paste(img2, (dist_left, dist_up))
         p_cpy.show()
-    except:
+    except Exception as e:
+        print(e)
         print("Enter valid input !! ")
         copypaste(p)
     finally:
-        WannaSave(p_cpy, path)
+        WannaSave(p_cpy, f"{path}\\{d}")
 
 
 def flipme(p):
@@ -155,16 +172,16 @@ def flipme(p):
             new_image.show()
         elif opt == 3:
             new_image = p.transpose(Image.FLIP_LEFT_RIGHT)
-            new_image.save('img.jpg')
             new_image.show()
         elif opt == 4:
             new_image = p.transpose(Image.FLIP_TOP_BOTTOM)
             new_image.show()
-    except:
+    except Exception as e:
+        print(e)
         print("Enter valid input !! ")
         flipme(p)
     finally:
-        WannaSave(new_image, path)
+        WannaSave(new_image, f"{path}\\{d}")
 
 
 def cropme(p):
@@ -187,7 +204,8 @@ def cropme(p):
         else:
             print("Out Of range !!")
             cropme(p)
-    except:
+    except Exception as e:
+        print(e)
         print("Enter valid input !! ")
         cropme(p)
     finally:
@@ -216,5 +234,6 @@ while True:
         elif ask == 8:
             print("Thank You !!")
             break
-    except:
+    except Exception as e:
+        print(e)
         print("Please enter an integer!")
