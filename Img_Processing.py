@@ -1,8 +1,8 @@
-# from genericpath import isfile
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageFilter
 from os import mkdir, getcwd
 import os.path as op
-
+import numpy as np
+from PIL.Image import fromarray
 
 def printmenu():
     arr = ["Resize", "Rotate", "Filters", "Image Type",
@@ -75,7 +75,7 @@ def rotateme(p):
 
 
 def filters(p):
-    fil = ["Color Transform", "Enhancement", "Brightness", "Sharpness"]
+    fil = ["Greyscale", "Enhancement", "Brightness", "Sharpness", "Sepia", "Negative", "Blur"]
     for i in range(len(fil)):
         print(f"{i+1}.  {fil[i]}")
     try:
@@ -87,28 +87,41 @@ def filters(p):
                     mkdir(f"{path}\\{d}\\{fil[i]}")
         filter = int(input(">>Enter filter : "))
         if filter == 1:
-            mode = input(">>Enter mode for transormation (RGB/L/CMYK): ")
-            new_image = p.convert(mode)
+            new_image = p.convert("L")
             new_image.show()
             WannaSave(new_image, f"{path}\\{d}\\{fil[0]}")
         elif filter == 2:
-            fact = float(input(">>Enter contrast factor : "))
+            fact = float(input(">>Enter contrast factor: "))
             contrast = ImageEnhance.Contrast(p)
             c = contrast.enhance(fact)
             c.show()
             WannaSave(c, f"{path}\\{d}\\{fil[1]}")
         elif filter == 3:
-            fact = float(input(">>Enter brightness factor : "))
+            fact = float(input(">>Enter brightness factor: "))
             brightness = ImageEnhance.Brightness(p)
             b = brightness.enhance(fact)
             b.show()
             WannaSave(b, f"{path}\\{d}\\{fil[2]}")
         elif filter == 4:
-            fact = float(input(">>Enter sharpness factor : "))
+            fact = float(input(">>Enter sharpness factor: "))
             sharpness = ImageEnhance.Sharpness(p)
             s = sharpness.enhance(fact)
             s.show()
             WannaSave(s, f"{path}\\{d}\\{fil[3]}")
+        elif filter == 5:
+            sepiaP = sepiaImage(p)
+            sepiaP.show()
+            WannaSave(sepiaP, f"{path}\\{d}\\{fil[4]}")
+        elif filter == 6:
+            negativeP = negativeImage(p)
+            negativeP.show()
+            WannaSave(negativeP,f"{path}\\{d}\\{fil[5]}")
+        elif filter == 7:
+            print("This is Box Blur. The more the radius(a parameter) the higher the output image will be blurred. ")
+            radius = float(input(">>Enter the radius for blur: "))
+            blur = p.filter(ImageFilter.BoxBlur(radius))
+            blur.show()
+            WannaSave(blur,f"{path}\\{d}\\{fil[6]}")
     except Exception as e:
         print(e)
         print("Enter valid input !! ")
@@ -139,8 +152,8 @@ def copypaste(p):
         img2_name = input(">>Enter new name of image : ")
         img2 = Image.open(img2_name)
         p_cpy = p.copy()
-        dist_left = int(input(">>Enter distance from left : "))
-        dist_up = int(input(">>Enter distance from upside : "))
+        dist_left = int(input(">>Enter distance from the left edge: "))
+        dist_up = int(input(">>Enter distance from the top edge: "))
         p_cpy.paste(img2, (dist_left, dist_up))
         p_cpy.show()
     except Exception as e:
@@ -190,25 +203,48 @@ def cropme(p):
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
         width, height = p.size
-        print(" !! Enter values in range of :\nWidth: 0",
-              width, "\nHeight: 0 ", height, " !!")
-        p1 = int(input(">>Enter distance from left : "))
-        p2 = int(input(">>Enter distance from up : "))
-        p3 = int(input(">>Enter distance from right : "))
-        p4 = int(input(">>Enter distance from bottom : "))
-        if p1 < width and p3 < width and p1 < height and p4 < height:
-            box = (p1, p2, p3, p4)
+        print(f"Width and Height of this photo is {width} and {height} respectively.\nPlease enter values with regards to this...")
+        p1 = int(input(">>Enter the distance of top of crop-box from the top edge: "))
+        p2 = int(input(">>Enter the distance of left of crop-box from the left edge: "))
+        p3 = int(input(">>Enter the distance of right of crop-box from the right edge: "))
+        p4 = int(input(">>Enter the distance of bottom of crop-box from the bottom edge: "))
+        top = p1
+        left = p2
+        right = width-p3
+        bottom = height-p4
+        if left<right and top<bottom and left<width and right<width and top<height and bottom<height:
+            box = (left,top,right,bottom)
             new_img = p.crop(box)
             new_img.show()
         else:
-            print("Out Of range !!")
+            print("Values are going out of range!! Please enter valid input!!")
             cropme(p)
     except Exception as e:
         print(e)
         print("Enter valid input !! ")
         cropme(p)
     finally:
-        WannaSave(new_img, path)
+        WannaSave(new_img, f"{path}\\{d}")
+
+
+def negativeImage(p):
+    n= np.array(p)
+    for i in range(len(n)):
+        for j in range(len(n[i])):
+            n[i][j][0] = 255 - n[i][j][0]
+            n[i][j][1] = 255 - n[i][j][1]
+            n[i][j][2] = 255 - n[i][j][2]
+    return Image.fromarray(n)
+
+def sepiaImage(p):
+    img = np.array(p)
+    lmap = np.matrix([[ 0.393, 0.769, 0.189],
+                      [ 0.349, 0.686, 0.168],
+                      [ 0.272, 0.534, 0.131]                                  
+    ])
+    filt = np.array([x * lmap.T for x in img] )
+    filt[np.where(filt>255)] = 255
+    return fromarray(filt.astype('uint8'))
 
 
 while True:
