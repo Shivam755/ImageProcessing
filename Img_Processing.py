@@ -135,7 +135,7 @@ def changemytype(p):
         d = "Type Changed Images"
         if op.isdir(path+"\\"+d) == False:
             mkdir(f"{path}\\{d}")
-        img_name = input(">>Enter new name of image : ")
+        img_name = input(">>Enter new name of image(without extension) : ")
         img_type = input(">>Enter extention of image : ")
         p.save(f"{path}\\{d}\\{img_name}.{img_type}")
     elif ask2.casefold() == "N".casefold():
@@ -180,21 +180,24 @@ def flipme(p):
         if opt == 1:
             new_image = p.transpose(Image.TRANSPOSE)
             new_image.show()
+            WannaSave(new_image, f"{path}\\{d}\\{flip[1]}")
         elif opt == 2:
             new_image = p.transpose(Image.TRANSVERSE)
             new_image.show()
+            WannaSave(new_image, f"{path}\\{d}\\{flip[2]}")
         elif opt == 3:
             new_image = p.transpose(Image.FLIP_LEFT_RIGHT)
             new_image.show()
+            WannaSave(new_image, f"{path}\\{d}\\{flip[3]}")
         elif opt == 4:
             new_image = p.transpose(Image.FLIP_TOP_BOTTOM)
             new_image.show()
+            WannaSave(new_image, f"{path}\\{d}\\{flip[4]}")
     except Exception as e:
         print(e)
         print("Enter valid input !! ")
         flipme(p)
-    finally:
-        WannaSave(new_image, f"{path}\\{d}")
+    
 
 
 def cropme(p):
